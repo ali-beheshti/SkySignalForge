@@ -10,13 +10,23 @@ Required halo quantities are redshift, concentration, NFW scale radius, characte
 
 The tSZ painter uses a circular Gaussian profile. The thermodynamic-temperature conversion is frequency dependent through
 
-\[
+```math
 g(x)=x\coth(x/2)-4,
 \qquad
 x=h\nu/(k_B T_{\rm CMB}).
-\]
+```
 
 The default settings are 150 GHz, intrinsic Gaussian FWHM 5.83 arcmin, and amplitude multiplier 1.328.
+
+## Kinetic SZ
+
+The kSZ painter uses a Gaussian optical-depth profile and the relation
+
+\[
+\Delta T_{\rm kSZ}/T_{\rm CMB} = -\tau v_{\rm los}/c.
+\]
+
+Positive line-of-sight velocity is defined as motion away from the observer. The profile amplitude is supplied as a dimensionless peak optical depth.
 
 ## Point and impulse sources
 

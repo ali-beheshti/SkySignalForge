@@ -2,7 +2,7 @@
 
 Python tools for painting compact astrophysical signals onto flat-sky maps from object catalogs.
 
-The package includes moving-lens temperature dipoles, Gaussian thermal-SZ profiles, point/impulse source layers, and circular halo masks in a common configurable map geometry.
+The package includes moving-lens temperature dipoles, Gaussian thermal-SZ and kinetic-SZ profiles, point/impulse source layers, and circular halo masks in a common configurable map geometry.
 
 **Tech:** Python · NumPy · pandas · Matplotlib · tqdm · pytest
 
@@ -18,6 +18,7 @@ The package includes moving-lens temperature dipoles, Gaussian thermal-SZ profil
 |---|---|
 | **Moving lens** | truncated-NFW deflection profile × transverse velocity |
 | **thermal SZ** | Gaussian temperature profile with configurable observing frequency |
+| **kinetic SZ** | Gaussian optical-depth profile × line-of-sight peculiar velocity |
 | **Point sources** | nearest-pixel catalog source painter with optional amplitudes |
 | **Dust/CIB test layer** | compact catalog-position temperature impulses |
 | **Localization disks** | small unit disks around catalog positions |
@@ -27,17 +28,17 @@ The dust/CIB routine is intentionally a compact source-position test layer rathe
 
 ## Moving-lens model
 
-For transverse speed \(v_\perp\),
+For transverse speed $v_\perp$,
 
-$$
+```math
 \Delta T =
 T_{\rm CMB}\,
 \beta(\theta)\,
 \frac{v_\perp}{c}
 \cos(\phi_v-\phi),
-$$
+```
 
-where \(\beta(\theta)\) is the truncated-NFW lensing deflection profile, \(\phi_v\) is the transverse-velocity direction, and \(\phi\) is the angular position around the halo.
+where $\beta(\theta)$ is the truncated-NFW lensing deflection profile, $\phi_v$ is the transverse-velocity direction, and $\phi$ is the angular position around the halo.
 
 <p align="center">
   <img src="figures/moving_lens_dipole.png" alt="Single-halo moving-lens temperature dipole" width="560">
@@ -47,22 +48,22 @@ where \(\beta(\theta)\) is the truncated-NFW lensing deflection profile, \(\phi_
 
 The non-relativistic thermodynamic-temperature factor is
 
-$$
+```math
 g(x)=x\coth(x/2)-4,
 \qquad
 x=\frac{h\nu}{k_B T_{\rm CMB}}.
-$$
+```
 
 The Gaussian painter uses
 
-$$
+```math
 \Delta T_{\rm tSZ}(\theta)
 =
 A\,T_{\rm CMB}\,g(x)
 \exp\left(-\frac{\theta^2}{2\sigma^2}\right).
-$$
+```
 
-The default configuration uses 150 GHz, intrinsic FWHM \(5.83'\), and amplitude scale 1.328.
+The default configuration uses 150 GHz, intrinsic FWHM $5.83'$, and amplitude scale 1.328.
 
 <p align="center">
   <img src="figures/tsz_gaussian.png" alt="Gaussian tSZ halo profile at 150 GHz" width="560">
@@ -70,6 +71,32 @@ The default configuration uses 150 GHz, intrinsic FWHM \(5.83'\), and amplitude 
 
 <p align="center">
   <img src="figures/tsz_spectral_factor.png" alt="Non-relativistic tSZ spectral factor" width="560">
+</p>
+
+
+## Kinetic SZ model
+
+The kSZ painter uses the standard thermodynamic-temperature relation
+
+```math
+\frac{\Delta T_{\rm kSZ}}{T_{\rm CMB}}
+=
+-\tau(\theta)\frac{v_{\rm los}}{c},
+```
+
+with a Gaussian optical-depth profile,
+
+```math
+\tau(\theta)
+=
+\tau_0
+\exp\left(-\frac{\theta^2}{2\sigma^2}\right).
+```
+
+Positive \(v_{\rm los}\) is defined as motion away from the observer.
+
+<p align="center">
+  <img src="figures/ksz_gaussian.png" alt="Gaussian kSZ map with positive and negative line-of-sight velocities" width="560">
 </p>
 
 ## Catalog layers and masks
@@ -104,6 +131,7 @@ from flat_sky_signal_painter import (
     MovingLensCatalog,
     paint_moving_lens,
     paint_tsz_gaussian,
+    paint_ksz_gaussian,
 )
 
 df = pd.read_csv("examples/demo_catalog.csv")
@@ -118,6 +146,14 @@ tsz_map = paint_tsz_gaussian(
     df["tszGaussAmp"],
     geometry,
     frequency_ghz=150.0,
+)
+
+ksz_map = paint_ksz_gaussian(
+    df["RArad"],
+    df["DECrad"],
+    df["kszTauAmp"],
+    df["vLos"],
+    geometry,
 )
 ```
 
@@ -136,6 +172,7 @@ Other subcommands are:
 
 ```text
 sky-paint tsz
+sky-paint ksz
 sky-paint points
 sky-paint dust
 sky-paint mask
@@ -148,15 +185,17 @@ The demo and DataFrame adapters use the same compact names as the analysis catal
 | Column | Meaning | Units |
 |---|---|---|
 | `Z` | redshift | dimensionless |
-| `cNFW` | NFW concentration / truncation radius in units of \(R_s\) | dimensionless |
+| `cNFW` | NFW concentration / truncation radius in units of $R_s$ | dimensionless |
 | `Rs` | comoving NFW scale radius | Mpc |
-| `rhoS` | comoving characteristic density | \(M_\odot\,{\rm Mpc}^{-3}\) |
+| `rhoS` | comoving characteristic density | $M_\odot\,{\rm Mpc}^{-3}$ |
 | `comovDist` | comoving distance | Mpc |
 | `vTh` | transverse theta-velocity component | km/s |
 | `vPh` | transverse phi-velocity component | km/s |
 | `RArad` | flat-patch RA coordinate | rad |
 | `DECrad` | flat-patch Dec coordinate | rad |
 | `tszGaussAmp` | Gaussian tSZ profile amplitude | dimensionless |
+| `kszTauAmp` | Gaussian kSZ optical-depth amplitude | dimensionless |
+| `vLos` | line-of-sight peculiar velocity | km/s |
 | `Thetavir` | circular mask radius | rad |
 | `pointAmp` | optional point-source amplitude | arbitrary |
 | `dustAmp` | optional dust-test source amplitude | µK |
@@ -172,6 +211,7 @@ src/flat_sky_signal_painter/
   profiles.py      # NFW, Gaussian, and tSZ spectral profiles
   moving_lens.py   # moving-lens temperature painter
   tsz.py           # Gaussian tSZ painter
+  ksz.py           # Gaussian kSZ painter
   sources.py       # point, dust-test, and localization layers
   masks.py         # circular halo masks
   cli.py           # command-line interface
@@ -184,6 +224,7 @@ figures/
   moving_lens_dipole.png
   nfw_profile.png
   tsz_gaussian.png
+  ksz_gaussian.png
   tsz_spectral_factor.png
   point_sources.png
   halo_mask.png
@@ -210,4 +251,3 @@ ThumbStack is a separate analysis framework. This repository focuses on reusable
 
 ## Scope
 
-This version contains the signal models listed above. A kSZ painter is **not** included.

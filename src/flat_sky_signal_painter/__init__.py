@@ -2,6 +2,7 @@
 
 from .catalog import MovingLensCatalog, PositionCatalog, read_csv
 from .geometry import MapGeometry
+from .ksz import paint_ksz_gaussian
 from .masks import paint_circular_masks
 from .moving_lens import paint_moving_lens, single_moving_lens_template
 from .profiles import (
@@ -23,6 +24,7 @@ __all__ = [
     "MovingLensCatalog",
     "read_csv",
     "paint_moving_lens",
+    "paint_ksz_gaussian",
     "single_moving_lens_template",
     "paint_tsz_gaussian",
     "paint_point_sources",

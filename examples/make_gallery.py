@@ -16,6 +16,7 @@ from flat_sky_signal_painter import (
     MovingLensCatalog,
     paint_circular_masks,
     paint_moving_lens,
+    paint_ksz_gaussian,
     paint_point_sources,
     paint_tsz_gaussian,
     single_moving_lens_template,
@@ -38,6 +39,8 @@ def make_catalog():
         "RArad": np.deg2rad([-0.30, 0.28, 0.24, -0.20, 0.02]),
         "DECrad": np.deg2rad([0.20, 0.27, -0.25, -0.23, 0.02]),
         "tszGaussAmp": [1.4e-6, 1.0e-6, 1.8e-6, 0.8e-6, 1.2e-6],
+        "kszTauAmp": [1.8e-3, 1.2e-3, 2.0e-3, 1.0e-3, 1.5e-3],
+        "vLos": [420.0, -360.0, 250.0, -500.0, 310.0],
         "Thetavir": np.deg2rad(np.array([5.0, 4.0, 5.5, 3.5, 4.5]) / 60.0),
         "pointAmp": [1.0, 0.7, 1.3, 0.9, 1.1],
         "dustAmp": [4.25, 3.2, 5.0, 2.8, 4.6],
@@ -217,6 +220,24 @@ def main():
     )
     save_map(tsz, tsz_geo, "tsz_gaussian.png",
              "Gaussian tSZ profile at 150 GHz", r"$\Delta T_{\rm tSZ}$ [$\mu$K]")
+
+    ksz_geo = MapGeometry(npix=256, size_deg=0.65)
+    ksz = paint_ksz_gaussian(
+        df["RArad"],
+        df["DECrad"],
+        df["kszTauAmp"],
+        df["vLos"],
+        ksz_geo,
+        intrinsic_fwhm_arcmin=5.83,
+        show_progress=False,
+    )
+    save_map(
+        ksz,
+        ksz_geo,
+        "ksz_gaussian.png",
+        "Gaussian kSZ map with mixed line-of-sight velocities",
+        r"$\Delta T_{\rm kSZ}$ [$\mu$K]",
+    )
 
     wide = MapGeometry(npix=260, size_deg=1.2)
     pts = paint_point_sources(

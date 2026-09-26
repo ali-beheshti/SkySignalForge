@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 
 from .catalog import MovingLensCatalog, PositionCatalog
 from .geometry import MapGeometry
+from .ksz import paint_ksz_gaussian
 from .masks import paint_circular_masks
 from .moving_lens import paint_moving_lens
 from .sources import paint_dust_test_sources, paint_point_sources
@@ -42,7 +43,7 @@ def main():
     p = argparse.ArgumentParser(description="Paint flat-sky astrophysical signal maps.")
     sub = p.add_subparsers(dest="command", required=True)
 
-    for name in ["moving-lens", "tsz", "points", "dust", "mask"]:
+    for name in ["moving-lens", "tsz", "ksz", "points", "dust", "mask"]:
         sp = sub.add_parser(name)
         sp.add_argument("catalog")
         sp.add_argument("--npix", type=int, default=256)
@@ -52,6 +53,7 @@ def main():
         sp.add_argument("--no-progress", action="store_true")
 
     sub.choices["tsz"].add_argument("--frequency-ghz", type=float, default=150.0)
+    sub.choices["ksz"].add_argument("--fwhm-arcmin", type=float, default=5.83)
     sub.choices["mask"].add_argument("--union", action="store_true")
 
     args = p.parse_args()
@@ -70,6 +72,17 @@ def main():
                 frequency_ghz=args.frequency_ghz, show_progress=show,
             )
             label = r"$\Delta T_{\rm tSZ}$ [$\mu$K]"
+        elif args.command == "ksz":
+            arr = paint_ksz_gaussian(
+                pos.ra_rad,
+                pos.dec_rad,
+                df["kszTauAmp"].to_numpy(),
+                df["vLos"].to_numpy(),
+                geometry,
+                intrinsic_fwhm_arcmin=args.fwhm_arcmin,
+                show_progress=show,
+            )
+            label = r"$\Delta T_{\rm kSZ}$ [$\mu$K]"
         elif args.command == "points":
             amp = df["pointAmp"].to_numpy() if "pointAmp" in df else None
             arr = paint_point_sources(pos.ra_rad, pos.dec_rad, geometry, amplitudes=amp, show_progress=show)

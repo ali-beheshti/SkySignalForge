@@ -5,6 +5,7 @@ from flat_sky_signal_painter import (
     MovingLensCatalog,
     paint_circular_masks,
     paint_moving_lens,
+    paint_ksz_gaussian,
     paint_point_sources,
     paint_tsz_gaussian,
 )
@@ -72,3 +73,22 @@ def test_tsz_shape_and_sign_at_150():
     )
     assert m.shape == (64, 64)
     assert np.min(m) < 0.0
+
+
+def test_ksz_velocity_sign_flip():
+    geo = MapGeometry(npix=64, size_deg=0.8)
+    plus = paint_ksz_gaussian(
+        [0.0], [0.0], [1.5e-3], [400.0], geo, show_progress=False
+    )
+    minus = paint_ksz_gaussian(
+        [0.0], [0.0], [1.5e-3], [-400.0], geo, show_progress=False
+    )
+    assert np.allclose(minus, -plus)
+
+
+def test_ksz_zero_velocity_is_zero():
+    geo = MapGeometry(npix=64, size_deg=0.8)
+    m = paint_ksz_gaussian(
+        [0.0], [0.0], [1.5e-3], [0.0], geo, show_progress=False
+    )
+    assert np.allclose(m, 0.0)
