@@ -1,0 +1,9 @@
+"""Physical constants used by the signal painters."""
+
+C_MS = 299_792_458.0
+C_KMS = 299_792.458
+G_MPC_KMS2_MSUN = 4.299421976550123e-9
+TCMB_K = 2.726
+TCMB_UK = 2.726e6
+PLANCK_J_HZ = 6.626e-34
+BOLTZMANN_J_K = 1.380649e-23

@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+title: Flat-Sky Signal Painter
+message: >-
+  If you use the moving-lens component in scientific work, please cite the
+  associated moving-lens paper.
+type: software
+authors:
+  - family-names: Beheshti
+    given-names: Ali
+repository-code: https://github.com/ali-beheshti/flat-sky-signal-painter
+preferred-citation:
+  type: article
+  title: "Moving lens effect: Simulations, forecasts, and foreground mitigation"
+  authors:
+    - family-names: Beheshti
+      given-names: Ali
+    - family-names: Schaan
+      given-names: Emmanuel
+    - family-names: Kosowsky
+      given-names: Arthur
+  journal: Physical Review D
+  volume: 111
+  year: 2025
+  doi: 10.1103/PhysRevD.111.043510
