@@ -249,5 +249,3 @@ Physical Review D 111, 043510 (2025).**
 
 ThumbStack is a separate analysis framework. This repository focuses on reusable flat-sky signal-painting utilities.
 
-## Scope
-
