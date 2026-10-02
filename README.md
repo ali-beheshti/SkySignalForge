@@ -1,4 +1,4 @@
-# Flat-Sky Signal Painter
+# Fast Signal Painter
 
 Python tools for painting compact astrophysical signals onto flat-sky maps from object catalogs.
 
