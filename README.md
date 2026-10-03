@@ -1,6 +1,6 @@
-# Fast Signal Painter
+# SkySignalForge
 
-Python tools for painting compact astrophysical signals onto flat-sky maps from object catalogs.
+Python tools for stamping compact astrophysical signals onto flat-sky maps from object catalogs.
 
 The package includes moving-lens temperature dipoles, Gaussian thermal-SZ and kinetic-SZ profiles, point/impulse source layers, and circular halo masks in a common configurable map geometry.
 
@@ -12,14 +12,14 @@ The package includes moving-lens temperature dipoles, Gaussian thermal-SZ and ki
 
 <p align="center"><em>Multiple halos evolve over time as their transverse velocities rotate and their sky positions drift.</em></p>
 
-## Included signal painters
+## Included signal stampers
 
 | Component | Model |
 |---|---|
 | **Moving lens** | truncated-NFW deflection profile × transverse velocity |
 | **thermal SZ** | Gaussian temperature profile with configurable observing frequency |
 | **kinetic SZ** | Gaussian optical-depth profile × line-of-sight peculiar velocity |
-| **Point sources** | nearest-pixel catalog source painter with optional amplitudes |
+| **Point sources** | nearest-pixel catalog source stamper with optional amplitudes |
 | **Dust/CIB test layer** | compact catalog-position temperature impulses |
 | **Localization disks** | small unit disks around catalog positions |
 | **Halo masks** | per-object circular masks with catalog-supplied angular radii |
@@ -54,7 +54,7 @@ g(x)=x\coth(x/2)-4,
 x=\frac{h\nu}{k_B T_{\rm CMB}}.
 ```
 
-The Gaussian painter uses
+The Gaussian stamper uses
 
 ```math
 \Delta T_{\rm tSZ}(\theta)
@@ -76,7 +76,7 @@ The default configuration uses 150 GHz, intrinsic FWHM $5.83'$, and amplitude sc
 
 ## Kinetic SZ model
 
-The kSZ painter uses the standard thermodynamic-temperature relation
+The kSZ stamper uses the standard thermodynamic-temperature relation
 
 ```math
 \frac{\Delta T_{\rm kSZ}}{T_{\rm CMB}}
